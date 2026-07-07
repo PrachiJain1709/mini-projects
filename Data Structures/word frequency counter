@@ -1,0 +1,35 @@
+# Word Frequency Counter
+
+# Read passage from user
+passage = input("Enter a paragraph:\n")
+
+# Convert to lowercase and remove punctuation
+for ch in ".,!?;:-()[]{}\"'":
+    passage = passage.replace(ch, "")
+
+# Split passage into words
+words = passage.lower().split()
+
+# Count word frequencies using a dictionary
+word_count = {}
+
+for word in words:
+    if word in word_count:
+        word_count[word] += 1
+    else:
+        word_count[word] = 1
+
+# Sort words by frequency (highest first)
+sorted_words = sorted(word_count.items(), key=lambda x: x[1], reverse=True)
+
+# Display all word frequencies
+print("\n===== Word Frequencies =====")
+for word, count in sorted_words:
+    print(f"{word:<15} : {count}")
+
+# Display Top 5 most frequent words using comprehension
+top5 = [(word, count) for word, count in sorted_words[:5]]
+
+print("\n===== Top 5 Most Frequent Words =====")
+for word, count in top5:
+    print(f"{word:<15} : {count}")
