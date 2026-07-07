@@ -1,0 +1,90 @@
+import random
+
+# -----------------------------
+# Choose Difficulty
+# -----------------------------
+def choose_difficulty():
+    while True:
+        print("\nChoose Difficulty")
+        print("1. Easy   (1-50, 10 attempts)")
+        print("2. Medium (1-100, 7 attempts)")
+        print("3. Hard   (1-200, 5 attempts)")
+
+        choice = input("Enter your choice (1/2/3): ")
+
+        if choice == "1":
+            return 50, 10
+        elif choice == "2":
+            return 100, 7
+        elif choice == "3":
+            return 200, 5
+        else:
+            print("❌ Invalid choice. Try again.")
+
+
+# -----------------------------
+# Play Game
+# -----------------------------
+def play_game():
+
+    max_number, attempts = choose_difficulty()
+
+    secret = random.randint(1, max_number)
+    remaining = attempts
+
+    print(f"\nGuess a number between 1 and {max_number}")
+
+    while remaining > 0:
+
+        try:
+            guess = int(input(f"\nAttempts Left ({remaining}): "))
+
+        except ValueError:
+            print("Please enter numbers only.")
+            continue
+
+        if guess < 1 or guess > max_number:
+            print("Guess is outside the range.")
+            continue
+
+        if guess == secret:
+            print("\n🎉 Congratulations!")
+            print("You guessed the correct number!")
+
+            score = remaining * 10
+            print(f"🏆 Score: {score}")
+            return
+
+        elif guess < secret:
+            print("📉 Too Low!")
+
+        else:
+            print("📈 Too High!")
+
+        remaining -= 1
+
+    print("\n💀 Game Over!")
+    print("The correct number was:", secret)
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+def main():
+
+    print("=" * 40)
+    print("     NUMBER GUESSING GAME")
+    print("=" * 40)
+
+    while True:
+
+        play_game()
+
+        again = input("\nPlay Again? (y/n): ").lower()
+
+        if again != "y":
+            print("\nThanks for playing!")
+            break
+
+
+main()
