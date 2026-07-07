@@ -1,0 +1,146 @@
+# -------------------------------
+# Contact Book (CLI)
+# -------------------------------
+
+contacts = {}          # Dictionary to store contacts
+phone_numbers = set()  # Set to prevent duplicate phone numbers
+
+
+def add_contact():
+    name = input("\nEnter contact name: ").strip().title()
+
+    if name in contacts:
+        print("❌ Contact already exists!")
+        return
+
+    phone = input("Enter phone number: ").strip()
+
+    if not phone.isdigit() or len(phone) != 10:
+        print("❌ Invalid phone number! Enter a 10-digit number.")
+        return
+
+    if phone in phone_numbers:
+        print("❌ This phone number already exists!")
+        return
+
+    email = input("Enter email: ").strip()
+
+    contacts[name] = {
+        "Phone": phone,
+        "Email": email
+    }
+
+    phone_numbers.add(phone)
+    print("✅ Contact added successfully!")
+
+
+def search_contact():
+    name = input("\nEnter contact name to search: ").strip().title()
+
+    if name in contacts:
+        print("\nContact Found")
+        print("-" * 30)
+        print("Name :", name)
+        print("Phone:", contacts[name]["Phone"])
+        print("Email:", contacts[name]["Email"])
+    else:
+        print("❌ Contact not found.")
+
+
+def update_contact():
+    name = input("\nEnter contact name to update: ").strip().title()
+
+    if name not in contacts:
+        print("❌ Contact not found.")
+        return
+
+    old_phone = contacts[name]["Phone"]
+
+    print("\nLeave blank if you don't want to change.")
+
+    new_phone = input("New phone: ").strip()
+
+    if new_phone != "":
+        if not new_phone.isdigit() or len(new_phone) != 10:
+            print("❌ Invalid phone number!")
+            return
+
+        if new_phone != old_phone and new_phone in phone_numbers:
+            print("❌ Phone number already exists!")
+            return
+
+        phone_numbers.remove(old_phone)
+        phone_numbers.add(new_phone)
+        contacts[name]["Phone"] = new_phone
+
+    new_email = input("New email: ").strip()
+
+    if new_email != "":
+        contacts[name]["Email"] = new_email
+
+    print("✅ Contact updated successfully!")
+
+
+def delete_contact():
+    name = input("\nEnter contact name to delete: ").strip().title()
+
+    if name in contacts:
+        phone_numbers.remove(contacts[name]["Phone"])
+        del contacts[name]
+        print("✅ Contact deleted successfully!")
+    else:
+        print("❌ Contact not found.")
+
+
+def view_contacts():
+    if not contacts:
+        print("\n📂 Contact book is empty.")
+        return
+
+    print("\n===== ALL CONTACTS =====")
+
+    for name, details in contacts.items():
+        print("-" * 35)
+        print(f"Name : {name}")
+        print(f"Phone: {details['Phone']}")
+        print(f"Email: {details['Email']}")
+
+    print("-" * 35)
+
+
+def main():
+    while True:
+        print("\n====== CONTACT BOOK ======")
+        print("1. Add Contact")
+        print("2. Search Contact")
+        print("3. Update Contact")
+        print("4. Delete Contact")
+        print("5. View All Contacts")
+        print("6. Exit")
+
+        choice = input("Enter your choice (1-6): ")
+
+        if choice == "1":
+            add_contact()
+
+        elif choice == "2":
+            search_contact()
+
+        elif choice == "3":
+            update_contact()
+
+        elif choice == "4":
+            delete_contact()
+
+        elif choice == "5":
+            view_contacts()
+
+        elif choice == "6":
+            print("\n👋 Thank you for using Contact Book!")
+            break
+
+        else:
+            print("❌ Invalid choice! Please enter a number between 1 and 6.")
+
+
+main()
