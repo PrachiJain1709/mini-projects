@@ -1,0 +1,54 @@
+import csv
+
+INPUT_FILE = "students.csv"
+OUTPUT_FILE = "grades.csv"
+
+
+def calculate_grade(marks):
+
+    if marks >= 90:
+        return "A"
+
+    elif marks >= 75:
+        return "B"
+
+    elif marks >= 60:
+        return "C"
+
+    elif marks >= 40:
+        return "D"
+
+    else:
+        return "Fail"
+
+
+try:
+
+    with open(INPUT_FILE, "r") as file:
+
+        reader = csv.reader(file)
+
+        next(reader)
+
+        rows = []
+
+        for row in reader:
+            name = row[0]
+            marks = int(row[1])
+
+            grade = calculate_grade(marks)
+
+            rows.append([name, marks, grade])
+
+    with open(OUTPUT_FILE, "w", newline="") as file:
+
+        writer = csv.writer(file)
+
+        writer.writerow(["Name", "Marks", "Grade"])
+
+        writer.writerows(rows)
+
+    print("Grades saved in grades.csv")
+
+except FileNotFoundError:
+    print("students.csv not found.")
