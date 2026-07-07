@@ -1,0 +1,85 @@
+# -------------------------------
+# Student Result Management System
+# -------------------------------
+
+students = {}
+
+# Function to calculate grade
+def calculate_grade(mark):
+    if mark >= 90:
+        return "A+"
+    elif mark >= 80:
+        return "A"
+    elif mark >= 70:
+        return "B"
+    elif mark >= 60:
+        return "C"
+    elif mark >= 50:
+        return "D"
+    else:
+        return "F"
+
+
+# Input student details
+n = int(input("Enter number of students: "))
+
+for i in range(n):
+    print(f"\nStudent {i+1}")
+    name = input("Enter student name: ")
+
+    while True:
+        try:
+            marks = float(input("Enter marks (0-100): "))
+            if 0 <= marks <= 100:
+                break
+            else:
+                print("Marks should be between 0 and 100.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    students[name] = marks
+
+
+# Display Result
+print("\n========== STUDENT RESULTS ==========")
+
+for name, marks in students.items():
+    grade = calculate_grade(marks)
+    print(f"{name:<15} Marks: {marks:<6} Grade: {grade}")
+
+
+# Average Marks
+average = sum(students.values()) / len(students)
+
+print("\n------------------------------------")
+print(f"Class Average : {average:.2f}")
+
+
+# Find Topper
+topper = max(students, key=students.get)
+
+print(f"Topper        : {topper} ({students[topper]} marks)")
+
+
+# List Comprehension Examples
+
+# Students who passed
+passed_students = [name for name, marks in students.items() if marks >= 50]
+
+# Students who scored distinction
+distinction = [name for name, marks in students.items() if marks >= 75]
+
+# Grades dictionary using comprehension
+grades = {name: calculate_grade(marks) for name, marks in students.items()}
+
+print("\nPassed Students:")
+print(passed_students)
+
+print("\nDistinction Holders:")
+print(distinction)
+
+print("\nGrades Dictionary:")
+for name, grade in grades.items():
+    print(f"{name}: {grade}")
+
+print("\n========== END ==========")
