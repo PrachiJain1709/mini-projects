@@ -1,0 +1,213 @@
+import re
+import os
+
+FILE_NAME = "accounts.txt"
+
+
+# ----------------------------
+# Base Class
+# ----------------------------
+class Account:
+
+    def __init__(self, account_no, holder_name, balance=0):
+        self.account_no = account_no
+        self.holder_name = holder_name
+        self.__balance = balance      # Encapsulation
+
+    # Getter
+    def get_balance(self):
+        return self.__balance
+
+    # Setter
+    def set_balance(self, amount):
+        self.__balance = amount
+
+    def deposit(self, amount):
+
+        if amount <= 0:
+            print("Invalid amount.")
+            return
+
+        self.__balance += amount
+        print("Deposit Successful.")
+
+    def withdraw(self, amount):
+
+        if amount > self.__balance:
+            print("Insufficient Balance")
+        else:
+            self.__balance -= amount
+            print("Withdrawal Successful.")
+
+    def __str__(self):
+        return f"{self.account_no},{self.holder_name},{self.get_balance()}"
+
+
+# ----------------------------
+# Savings Account
+# ----------------------------
+class SavingsAccount(Account):
+
+    MIN_BALANCE = 500
+
+    def withdraw(self, amount):
+
+        if self.get_balance() - amount < self.MIN_BALANCE:
+            print("Minimum balance of ₹500 must remain.")
+        else:
+            self.set_balance(self.get_balance() - amount)
+            print("Withdrawal Successful.")
+
+
+# ----------------------------
+# Current Account
+# ----------------------------
+class CurrentAccount(Account):
+
+    OVERDRAFT_LIMIT = 1000
+
+    def withdraw(self, amount):
+
+        if amount > self.get_balance() + self.OVERDRAFT_LIMIT:
+            print("Overdraft limit exceeded.")
+        else:
+            self.set_balance(self.get_balance() - amount)
+            print("Withdrawal Successful.")
+
+
+# ----------------------------
+# Validation using Regex
+# ----------------------------
+def validate_account(account_no):
+    pattern = r"^ACC\d{5}$"
+
+    if re.fullmatch(pattern, account_no):
+        return True
+    return False
+
+
+# ----------------------------
+# File Handling
+# ----------------------------
+def save_account(account):
+
+    with open(FILE_NAME, "a") as file:
+        file.write(str(account) + "\n")
+
+
+def view_accounts():
+
+    if not os.path.exists(FILE_NAME):
+        print("No accounts found.")
+        return
+
+    print("\n------ Account Records ------\n")
+
+    with open(FILE_NAME, "r") as file:
+
+        for line in file:
+            print(line.strip())
+
+
+# ----------------------------
+# Main Program
+# ----------------------------
+account = None
+
+while True:
+
+    print("\n========== BANK SYSTEM ==========")
+    print("1. Create Savings Account")
+    print("2. Create Current Account")
+    print("3. Deposit")
+    print("4. Withdraw")
+    print("5. Check Balance")
+    print("6. View Saved Accounts")
+    print("7. Exit")
+
+    choice = input("Enter Choice: ")
+
+    if choice == "1":
+
+        acc_no = input("Account Number (ACC12345): ")
+
+        if not validate_account(acc_no):
+            print("Invalid Account Number Format")
+            continue
+
+        name = input("Holder Name: ")
+
+        try:
+            balance = float(input("Initial Balance: "))
+        except ValueError:
+            print("Invalid Input")
+            continue
+
+        account = SavingsAccount(acc_no, name, balance)
+
+        save_account(account)
+
+        print("Savings Account Created Successfully.")
+
+    elif choice == "2":
+
+        acc_no = input("Account Number (ACC12345): ")
+
+        if not validate_account(acc_no):
+            print("Invalid Account Number Format")
+            continue
+
+        name = input("Holder Name: ")
+
+        try:
+            balance = float(input("Initial Balance: "))
+        except ValueError:
+            print("Invalid Input")
+            continue
+
+        account = CurrentAccount(acc_no, name, balance)
+
+        save_account(account)
+
+        print("Current Account Created Successfully.")
+
+    elif choice == "3":
+
+        if account is None:
+            print("Create an account first.")
+            continue
+
+        try:
+            amount = float(input("Deposit Amount: "))
+            account.deposit(amount)
+        except ValueError:
+            print("Invalid Amount")
+
+    elif choice == "4":
+
+        if account is None:
+            print("Create an account first.")
+            continue
+
+        try:
+            amount = float(input("Withdraw Amount: "))
+            account.withdraw(amount)
+        except ValueError:
+            print("Invalid Amount")
+
+    elif choice == "5":
+
+        if account:
+            print(f"Current Balance = ₹{account.get_balance()}")
+
+    elif choice == "6":
+
+        view_accounts()
+
+    elif choice == "7":
+
+        print("Thank You!")
+        break
+
+    else:
+        print("Invalid Choice")
