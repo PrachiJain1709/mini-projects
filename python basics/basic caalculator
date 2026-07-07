@@ -1,0 +1,49 @@
+# ==============================
+# Basic Calculator
+# ==============================
+
+print("=" * 40)
+print("       BASIC CALCULATOR")
+print("=" * 40)
+
+while True:
+    try:
+        num1 = float(input("Enter first number: "))
+        break
+    except ValueError:
+        print("❌ Invalid input! Please enter a valid number.")
+
+while True:
+    try:
+        num2 = float(input("Enter second number: "))
+        break
+    except ValueError:
+        print("❌ Invalid input! Please enter a valid number.")
+
+print("\nChoose an operation:")
+print("+  Addition")
+print("-  Subtraction")
+print("*  Multiplication")
+print("/  Division")
+
+operation = input("\nEnter operation (+, -, *, /): ")
+
+if operation == "+":
+    print(f"\n✅ Result: {num1} + {num2} = {num1 + num2}")
+
+elif operation == "-":
+    print(f"\n✅ Result: {num1} - {num2} = {num1 - num2}")
+
+elif operation == "*":
+    print(f"\n✅ Result: {num1} * {num2} = {num1 * num2}")
+
+elif operation == "/":
+    if num2 == 0:
+        print("\n❌ Error! Division by zero is not allowed.")
+    else:
+        print(f"\n✅ Result: {num1} / {num2} = {num1 / num2}")
+
+else:
+    print("\n❌ Invalid operation selected!")
+
+print("\nThank you for using the calculator!")
