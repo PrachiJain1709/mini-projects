@@ -1,0 +1,134 @@
+import re
+import os
+
+LOG_FILE = "server.log"
+REPORT_FILE = "summary_report.txt"
+
+
+# ----------------------------
+# Generator
+# ----------------------------
+def read_log_file(filename):
+    """Reads the log file line by line using a generator."""
+    with open(filename, "r") as file:
+        for line in file:
+            yield line.strip()
+
+
+# ----------------------------
+# Log Analyzer
+# ----------------------------
+def analyze_log():
+
+    if not os.path.exists(LOG_FILE):
+        print("Log file not found!")
+        return
+
+    # Regex Patterns
+    timestamp_pattern = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"
+    ip_pattern = r"(?:\d{1,3}\.){3}\d{1,3}"
+    error_pattern = r"\b(ERROR|WARN|INFO)\b"
+
+    timestamps = []
+    ips = []
+    errors = {}
+
+    try:
+        for line in read_log_file(LOG_FILE):
+
+            # Timestamp
+            time = re.search(timestamp_pattern, line)
+            if time:
+                timestamps.append(time.group())
+
+            # IP Address
+            ip = re.search(ip_pattern, line)
+            if ip:
+                ips.append(ip.group())
+
+            # Error Level
+            error = re.search(error_pattern, line)
+            if error:
+                level = error.group()
+
+                if level in errors:
+                    errors[level] += 1
+                else:
+                    errors[level] = 1
+
+        # Save Report
+        with open(REPORT_FILE, "w") as report:
+
+            report.write("===== LOG SUMMARY =====\n\n")
+
+            report.write(f"Total Log Entries : {len(timestamps)}\n")
+            report.write(f"Unique IPs        : {len(set(ips))}\n\n")
+
+            report.write("Error Summary\n")
+            report.write("-----------------\n")
+
+            for level, count in errors.items():
+                report.write(f"{level} : {count}\n")
+
+            report.write("\nIP Addresses\n")
+            report.write("-----------------\n")
+
+            for ip in sorted(set(ips)):
+                report.write(ip + "\n")
+
+            report.write("\nTimestamps\n")
+            report.write("-----------------\n")
+
+            for t in timestamps:
+                report.write(t + "\n")
+
+        print("Analysis Complete!")
+        print(f"Summary saved to '{REPORT_FILE}'")
+
+    except Exception as e:
+        print("Error:", e)
+
+
+# ----------------------------
+# Create Sample Log File
+# ----------------------------
+def create_sample_log():
+
+    if os.path.exists(LOG_FILE):
+        return
+
+    with open(LOG_FILE, "w") as file:
+
+        file.write("2026-07-07 10:20:15 INFO User logged in 192.168.1.10\n")
+        file.write("2026-07-07 10:25:30 ERROR Database connection failed 192.168.1.11\n")
+        file.write("2026-07-07 10:30:20 WARN Disk usage high 192.168.1.12\n")
+        file.write("2026-07-07 10:35:10 INFO User logged out 192.168.1.10\n")
+        file.write("2026-07-07 10:40:45 ERROR Server timeout 192.168.1.13\n")
+
+    print("Sample server.log created.")
+
+
+# ----------------------------
+# Main Menu
+# ----------------------------
+while True:
+
+    print("\n========== LOG FILE ANALYZER ==========")
+    print("1. Create Sample Log File")
+    print("2. Analyze Log File")
+    print("3. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        create_sample_log()
+
+    elif choice == "2":
+        analyze_log()
+
+    elif choice == "3":
+        print("Thank You!")
+        break
+
+    else:
+        print("Invalid Choice.")
