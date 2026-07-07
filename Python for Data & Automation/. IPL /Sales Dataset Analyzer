@@ -1,0 +1,40 @@
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+
+print("\nOriginal Dataset")
+print(df)
+
+# Missing values
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# Fill missing profit
+df["Profit"] = df["Profit"].fillna(df["Profit"].mean())
+
+print("\nCleaned Dataset")
+print(df)
+
+print("\nAverage Sales by Region")
+print(df.groupby("Region")["Sales"].mean())
+
+print("\nAverage Profit by Region")
+print(df.groupby("Region")["Profit"].mean())
+
+print("\nHighest Sales")
+print(df.loc[df["Sales"].idxmax()])
+
+print("\nLowest Sales")
+print(df.loc[df["Sales"].idxmin()])
+
+print("\nTotal Sales")
+print(df["Sales"].sum())
+
+print("\nTotal Profit")
+print(df["Profit"].sum())
+
+print("\nTop 3 Sales")
+print(df.sort_values(by="Sales", ascending=False).head(3))
+
+print("\nAverage Profit")
+print(df["Profit"].mean())
