@@ -1,0 +1,177 @@
+import os
+from functools import wraps
+
+FILE_NAME = "payroll.txt"
+
+
+# ----------------------------
+# Decorator
+# ----------------------------
+def log_salary(func):
+    @wraps(func)
+    def wrapper(self):
+        salary = func(self)
+        print(f"\n[LOG] Salary calculated for {self.name}: ₹{salary}")
+        return salary
+    return wrapper
+
+
+# ----------------------------
+# Base Class
+# ----------------------------
+class Employee:
+
+    def __init__(self, emp_id, name):
+        self.emp_id = emp_id
+        self.name = name
+
+    @log_salary
+    def calculate_salary(self):
+        return 0
+
+    def __str__(self):
+        return f"{self.emp_id},{self.name}"
+
+
+# ----------------------------
+# Full-Time Employee
+# ----------------------------
+class FullTimeEmployee(Employee):
+
+    def __init__(self, emp_id, name, monthly_salary):
+        super().__init__(emp_id, name)
+        self.monthly_salary = monthly_salary
+
+    @log_salary
+    def calculate_salary(self):
+        return self.monthly_salary
+
+    def __str__(self):
+        return (f"FullTime,"
+                f"{self.emp_id},"
+                f"{self.name},"
+                f"{self.monthly_salary}")
+
+
+# ----------------------------
+# Part-Time Employee
+# ----------------------------
+class PartTimeEmployee(Employee):
+
+    def __init__(self, emp_id, name, hours, rate):
+        super().__init__(emp_id, name)
+        self.hours = hours
+        self.rate = rate
+
+    @log_salary
+    def calculate_salary(self):
+        return self.hours * self.rate
+
+    def __str__(self):
+        return (f"PartTime,"
+                f"{self.emp_id},"
+                f"{self.name},"
+                f"{self.hours},"
+                f"{self.rate}")
+
+
+# ----------------------------
+# File Handling
+# ----------------------------
+def export_employee(employee):
+
+    salary = employee.calculate_salary()
+
+    with open(FILE_NAME, "a") as file:
+        file.write(f"{employee},{salary}\n")
+
+    print("Payroll exported successfully.")
+
+
+def view_payroll():
+
+    if not os.path.exists(FILE_NAME):
+        print("Payroll file not found.")
+        return
+
+    print("\n------ Payroll Records ------\n")
+
+    with open(FILE_NAME, "r") as file:
+        for line in file:
+            print(line.strip())
+
+
+# ----------------------------
+# Main Program
+# ----------------------------
+employee = None
+
+while True:
+
+    print("\n========== EMPLOYEE PAYROLL ==========")
+    print("1. Add Full-Time Employee")
+    print("2. Add Part-Time Employee")
+    print("3. Calculate Salary")
+    print("4. Export Payroll")
+    print("5. View Payroll File")
+    print("6. Exit")
+
+    choice = input("Enter Choice: ")
+
+    if choice == "1":
+
+        emp_id = input("Employee ID: ")
+        name = input("Employee Name: ")
+
+        try:
+            salary = float(input("Monthly Salary: "))
+        except ValueError:
+            print("Invalid salary.")
+            continue
+
+        employee = FullTimeEmployee(emp_id, name, salary)
+        print("Full-Time Employee Added.")
+
+    elif choice == "2":
+
+        emp_id = input("Employee ID: ")
+        name = input("Employee Name: ")
+
+        try:
+            hours = float(input("Hours Worked: "))
+            rate = float(input("Hourly Rate: "))
+        except ValueError:
+            print("Invalid input.")
+            continue
+
+        employee = PartTimeEmployee(emp_id, name, hours, rate)
+        print("Part-Time Employee Added.")
+
+    elif choice == "3":
+
+        if employee is None:
+            print("Add an employee first.")
+            continue
+
+        salary = employee.calculate_salary()
+        print(f"Salary = ₹{salary}")
+
+    elif choice == "4":
+
+        if employee is None:
+            print("Add an employee first.")
+            continue
+
+        export_employee(employee)
+
+    elif choice == "5":
+
+        view_payroll()
+
+    elif choice == "6":
+
+        print("Thank You!")
+        break
+
+    else:
+        print("Invalid Choice.")
